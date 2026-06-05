@@ -7,6 +7,9 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true, // Use global APIs like describe, it, expect
+    env: {
+      DATABASE_URL: 'file:./test.db',
+    },
     setupFiles: ['./vitest.setup.ts'],
     coverage: {
       provider: 'v8',

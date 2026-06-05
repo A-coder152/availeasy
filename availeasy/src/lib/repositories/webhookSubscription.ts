@@ -26,7 +26,7 @@ export const createWebhookSubscription = async (data: {
   events: string[];
   isActive?: boolean;
 }): Promise<WebhookSubscription> => {
-  return prisma.webhookSubscription.create({ data });
+  return prisma.webhookSubscription.create({ data: { ...data, events: data.events as any } });
 };
 
 /**

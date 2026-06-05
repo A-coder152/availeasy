@@ -88,9 +88,10 @@ export const validateApiTokenScope = (
   apiToken: ApiToken,
   requiredScopes: string[]
 ): boolean => {
-  if (!apiToken.scopes || apiToken.scopes.length === 0) {
+  const scopes = apiToken.scopes as string[];
+  if (!scopes || scopes.length === 0) {
     return requiredScopes.length === 0; // If token has no scopes, it only passes if no scopes are required
   }
 
-  return requiredScopes.every((scope) => apiToken.scopes.includes(scope));
+  return requiredScopes.every((scope) => scopes.includes(scope));
 };

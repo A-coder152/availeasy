@@ -19,7 +19,7 @@ export const createApiToken = async (data: {
   scopes: string[];
   expiresAt?: Date;
 }): Promise<ApiToken> => {
-  return prisma.apiToken.create({ data });
+  return prisma.apiToken.create({ data: { ...data, scopes: data.scopes as any } });
 };
 
 /**

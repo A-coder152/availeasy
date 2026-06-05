@@ -1,4 +1,6 @@
-import prisma from "@/lib/db";
+import { getPrismaClient } from "@/lib/db";
+const prisma = getPrismaClient();
+
 import {
   AvailabilityRule,
   AvailabilityException,
