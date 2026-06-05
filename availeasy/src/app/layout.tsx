@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { SessionProvider } from "next-auth/react"; // Import SessionProvider
+import Providers from "@/components/Providers"; // Import the client-side Providers component
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Availeasy", // Updated title
-  description: "An API-first personal availability service", // Updated description
+  title: "Availeasy",
+  description: "An API-first personal availability service",
 };
 
 export default function RootLayout({
@@ -29,9 +29,9 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <SessionProvider> {/* Wrap children with SessionProvider */}
+        <Providers> {/* Wrap children with the client-side Providers */}
           {children}
-        </SessionProvider>
+        </Providers>
       </body>
     </html>
   );
