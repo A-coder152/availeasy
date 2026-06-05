@@ -7,15 +7,16 @@ import { addDays, format } from "date-fns";
 import { AvailabilityState } from "@prisma/client";
 import { notFound } from "next/navigation";
 import Script from "next/script";
+import CopyButton from "@/components/CopyButton";
 
 interface UserPublicPageProps {
-  params: {
+  params: Promise<{
     handle: string;
-  };
+  }>;
 }
 
 const UserPublicPage: NextPage<UserPublicPageProps> = async ({ params }) => {
-  const { handle } = params;
+  const { handle } = await params;
 
   const user = await findUserByHandle(handle);
   if (!user) {
@@ -45,7 +46,7 @@ const UserPublicPage: NextPage<UserPublicPageProps> = async ({ params }) => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <Script src={`${process.env.NEXTAUTH_URL}/u/${handle}/embed.js`} strategy="lazyOnload" />
+      <Script src={`${process.env.NEXTAUTH_URL}/u/${handle}/embed.js?v=2`} strategy="lazyOnload" />
 
       <h1 className="text-3xl font-bold text-gray-900 mb-6">
         {user.name || `@${handle}`}&apos;s Availability
@@ -77,9 +78,7 @@ const UserPublicPage: NextPage<UserPublicPageProps> = async ({ params }) => {
           {publicStatus.valid_until && (
             <p className="text-gray-500 text-xs">
               Until:{" "}
-              {format(new Date(publicStatus.valid_until), "MMM d, yyyy HH:mm", {
-                timeZone: userTimezone,
-              })}
+              {format(new Date(publicStatus.valid_until), "MMM d, yyyy HH:mm")}
             </p>
           )}
         </div>
@@ -102,13 +101,9 @@ const UserPublicPage: NextPage<UserPublicPageProps> = async ({ params }) => {
                         : "bg-gray-500"
                     }`}
                   ></span>
-                  {format(new Date(window.start), "MMM d, HH:mm", {
-                    timeZone: userTimezone,
-                  })}{" "}
+                  {format(new Date(window.start), "MMM d, HH:mm")}{" "}
                   -{" "}
-                  {format(new Date(window.end), "HH:mm", {
-                    timeZone: userTimezone,
-                  })}{" "}
+                  {format(new Date(window.end), "HH:mm")}{" "}
                   ({window.state.toLowerCase()}) {window.label && `(${window.label})`}
                 </li>
               ))}
@@ -126,12 +121,10 @@ const UserPublicPage: NextPage<UserPublicPageProps> = async ({ params }) => {
         <pre className="bg-gray-100 p-4 rounded-md text-sm overflow-x-auto">
           <code>{embedSnippet}</code>
         </pre>
-        <button
-          onClick={() => navigator.clipboard.writeText(embedSnippet)}
+        <CopyButton 
+          text={embedSnippet} 
           className="mt-4 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Copy Embed Snippet
-        </button>
+        />
 
         <div className="mt-8">
           <h3 className="text-lg font-semibold text-gray-800 mb-2">Live Demo</h3>

@@ -5,7 +5,7 @@ import { idSchema } from "@/lib/availability/validation";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   // This API is for dashboard use, so only session authentication is needed.
   // No API token authentication for this specific endpoint as it's for fetching
@@ -16,7 +16,8 @@ export async function GET(
     return unauthorizedResponse();
   }
 
-  const parseResult = idSchema.safeParse(params.id);
+  const { id } = await params;
+  const parseResult = idSchema.safeParse(id);
   if (!parseResult.success) {
     return new NextResponse("Invalid user ID", { status: 400 });
   }
