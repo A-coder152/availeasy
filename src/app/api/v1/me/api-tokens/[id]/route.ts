@@ -5,7 +5,7 @@ import { idSchema } from "@/lib/availability/validation";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { userId, apiToken } = await authenticateRequest(req, ["write", "admin"]);
 
@@ -16,7 +16,8 @@ export async function DELETE(
     return forbiddenResponse("API Token does not have 'admin' or 'write' scope to delete API tokens.");
   }
 
-  const parseResult = idSchema.safeParse(params.id);
+  const { id } = await params;
+  const parseResult = idSchema.safeParse(id);
   if (!parseResult.success) {
     return new NextResponse("Invalid API token ID", { status: 400 });
   }

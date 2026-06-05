@@ -83,8 +83,8 @@ export default function ApiTokensPage() {
         throw new Error(errorData || "Failed to create API token.");
       }
 
-      const data: ApiTokenWithPlainText = await response.json();
-      setGeneratedToken(data);
+      const data = await response.json();
+      setGeneratedToken({ ...data, plainTextToken: data.token });
       setNewTokenName(""); // Reset form
       setNewTokenScopes(["read"]);
       setSuccess("API token created successfully! Copy the token below, it will not be shown again.");
