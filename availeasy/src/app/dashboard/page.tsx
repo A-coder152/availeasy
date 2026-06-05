@@ -1,4 +1,5 @@
-import { auth } from "@/lib/auth";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getCurrentStatusByUserId } from "@/lib/repositories/currentStatus";
@@ -9,7 +10,8 @@ import { addDays, addHours } from "date-fns";
 import { AvailabilityState, CurrentStatusState } from "@prisma/client";
 
 export default async function DashboardPage() {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
+  console.log("Dashboard - Session:", session);
   if (!session?.user?.id) {
     redirect("/signin"); // Redirect to sign-in page if not authenticated
   }
