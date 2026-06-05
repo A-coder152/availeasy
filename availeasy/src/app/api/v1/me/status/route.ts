@@ -28,6 +28,14 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
+  return handleStatusUpdate(req);
+}
+
+export async function POST(req: NextRequest) {
+  return handleStatusUpdate(req);
+}
+
+async function handleStatusUpdate(req: NextRequest) {
   const { userId, apiToken } = await authenticateRequest(req, ["write", "write/status"]);
 
   if (!userId) {
@@ -37,7 +45,17 @@ export async function PUT(req: NextRequest) {
     return forbiddenResponse("API Token does not have 'write/status' or 'write' scope.");
   }
 
-  const body = await req.json();
+  const contentType = req.headers.get("content-type");
+  let body;
+
+  if (contentType?.includes("application/x-www-form-urlencoded")) {
+    const formData = await req.formData();
+    body = Object.fromEntries(formData.entries());
+    // Convert stringified booleans or numbers if needed, though here they are strings
+  } else {
+    body = await req.json();
+  }
+
   const parseResult = updateStatusSchema.safeParse(body);
 
   if (!parseResult.success) {
@@ -60,6 +78,10 @@ export async function PUT(req: NextRequest) {
       message,
       validUntilDate
     );
+    // For form submissions, redirect back to dashboard
+    if (contentType?.includes("application/x-www-form-urlencoded")) {
+        return NextResponse.redirect(new URL('/dashboard', req.url));
+    }
     return NextResponse.json(updatedStatus, { status: 200 });
   } catch (error) {
     console.error("Error updating current status:", error);

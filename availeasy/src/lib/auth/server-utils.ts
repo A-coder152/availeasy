@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 import { authenticateApiToken, validateApiTokenScope } from "./api-tokens";
 import { ApiToken } from "@prisma/client";
 
@@ -22,7 +23,8 @@ export const authenticateRequest = async (
   requiredScopes: string[] = []
 ): Promise<{ userId: string | null; apiToken: ApiToken | null }> => {
   // 1. Try session-based authentication (for dashboard requests)
-  const session = await auth();
+  const session = await getServerSession(authOptions);
+  console.log("Auth Debug - Session:", session);
   if (session?.user?.id) {
     return { userId: session.user.id, apiToken: null };
   }
