@@ -44,9 +44,16 @@ export default async function DashboardPage() {
             <h1 className="text-3xl font-extrabold text-gray-900">Dashboard</h1>
             <p className="text-gray-600">Welcome back, {user.handle}.</p>
           </div>
-          <Link href={`/u/${user.handle}`} className="text-indigo-600 font-semibold hover:underline">
-            View Public Page &rarr;
-          </Link>
+          <div className="flex gap-4 items-center">
+            <Link href={`/u/${user.handle}`} className="text-indigo-600 font-semibold hover:underline">
+              Public Page &rarr;
+            </Link>
+            <form action="/api/auth/signout" method="POST">
+              <button type="submit" className="text-gray-500 hover:text-red-600 text-sm font-semibold">
+                Sign Out
+              </button>
+            </form>
+          </div>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
