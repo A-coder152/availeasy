@@ -6,178 +6,109 @@ import { getCurrentStatusByUserId } from "@/lib/repositories/currentStatus";
 import { toPublicStatus } from "@/lib/public-safety";
 import { findUserById } from "@/lib/repositories/user";
 import { getAvailabilityForRange } from "@/lib/availability/calculate";
-import { addDays, addHours } from "date-fns";
+import { addDays, addHours, format } from "date-fns";
 import { AvailabilityState, CurrentStatusState } from "@prisma/client";
+import Tooltip from "@/components/Tooltip";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
-  console.log("Dashboard - Session:", session);
   if (!session?.user?.id) {
-    redirect("/signin"); // Redirect to sign-in page if not authenticated
+    redirect("/signin");
   }
 
   const userId = session.user.id;
   const user = await findUserById(userId);
-
   if (!user) {
-    // This should ideally not happen if session.user.id is valid
     redirect("/signin");
   }
 
   const userTimezone = user.timezone;
   const now = new Date();
-
-  // Fetch current status
-  const currentStatus = await getCurrentStatusByUserId(userId);
-  const publicStatus = toPublicStatus(currentStatus, userTimezone);
-
-  // Fetch next available window
-  const nextSevenDays = addDays(now, 7);
+  const publicStatus = toPublicStatus(await getCurrentStatusByUserId(userId), userTimezone);
   const availabilityWindows = await getAvailabilityForRange({
     userId,
     from: now,
-    to: nextSevenDays,
+    to: addDays(now, 7),
     timezone: userTimezone,
   });
 
-  const nextAvailableWindow = availabilityWindows.find(
-    (window) => window.state === AvailabilityState.available && new Date(window.end) > now
+  const nextAvailable = availabilityWindows.find(
+    (w) => w.state === AvailabilityState.available && new Date(w.end) > now
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Dashboard</h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Current Status Card */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Your Current Status</h2>
-          <div className="flex items-center gap-2 mb-2">
-            <span
-              className={`w-3 h-3 rounded-full ${
-                publicStatus.state === CurrentStatusState.available
-                  ? "bg-green-500"
-                  : publicStatus.state === CurrentStatusState.busy
-                  ? "bg-red-500"
-                  : publicStatus.state === CurrentStatusState.away
-                  ? "bg-orange-500"
-                  : publicStatus.state === CurrentStatusState.offline
-                  ? "bg-gray-500"
-                  : "bg-indigo-500" // Custom
-              }`}
-            ></span>
-            <span className="text-lg font-medium">
-              {publicStatus.state.charAt(0).toUpperCase() + publicStatus.state.slice(1)}
-            </span>
+    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+      <div className="max-w-5xl mx-auto">
+        <header className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-extrabold text-gray-900">Dashboard</h1>
+            <p className="text-gray-600">Welcome back, {user.handle}.</p>
           </div>
-          {publicStatus.message && (
-            <p className="text-gray-600 text-sm mb-2">"{publicStatus.message}"</p>
-          )}
-          {publicStatus.valid_until && (
-            <p className="text-gray-500 text-xs">
-              Until:{" "}
-              {new Date(publicStatus.valid_until).toLocaleString("en-US", {
-                timeZone: userTimezone,
-                hour: "numeric",
-                minute: "numeric",
-                day: "numeric",
-                month: "short",
-              })}
-            </p>
-          )}
+          <Link href={`/u/${user.handle}`} className="text-indigo-600 font-semibold hover:underline">
+            View Public Page &rarr;
+          </Link>
+        </header>
 
-          <div className="mt-4 border-t pt-4">
-            <h3 className="text-md font-semibold mb-2">Quick Status Update:</h3>
-            <div className="flex flex-wrap gap-2">
-              <form action="/api/v1/me/status" method="POST"> {/* Using POST for simplicity in forms, will convert to PUT in API route */}
-                <input type="hidden" name="state" value="available" />
-                <button type="submit" className="px-3 py-1 text-sm rounded-md bg-green-500 text-white hover:bg-green-600">
-                  Available
-                </button>
-              </form>
-              <form action="/api/v1/me/status" method="POST">
-                <input type="hidden" name="state" value="busy" />
-                <input type="hidden" name="valid_until" value={addHours(now, 1).toISOString()} />
-                <button type="submit" className="px-3 py-1 text-sm rounded-md bg-red-500 text-white hover:bg-red-600">
-                  Busy for 1h
-                </button>
-              </form>
-              <form action="/api/v1/me/status" method="POST">
-                <input type="hidden" name="state" value="away" />
-                <input type="hidden" name="valid_until" value={addDays(now, 1).toISOString()} />
-                <button type="submit" className="px-3 py-1 text-sm rounded-md bg-orange-500 text-white hover:bg-orange-600">
-                  Away until tomorrow
-                </button>
-              </form>
-              <form action="/api/v1/me/status" method="POST">
-                <input type="hidden" name="state" value="offline" />
-                <button type="submit" className="px-3 py-1 text-sm rounded-md bg-gray-500 text-white hover:bg-gray-600">
-                  Offline
-                </button>
-              </form>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <section className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <Tooltip text="The status others see when they check your availability.">
+              <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                Current Status
+                <span className="text-gray-400 font-normal text-sm">(?)</span>
+              </h2>
+            </Tooltip>
+            <div className="flex items-center gap-3 mb-4">
+              <span className={`w-4 h-4 rounded-full ${publicStatus.state === 'available' ? 'bg-green-500' : 'bg-red-500'}`}></span>
+              <span className="text-xl font-semibold capitalize">{publicStatus.state}</span>
             </div>
+            
+            <div className="flex flex-wrap gap-2 mt-6">
+              {[
+                { state: 'available', label: 'Available', color: 'bg-green-100 text-green-700 hover:bg-green-200' },
+                { state: 'busy', label: 'Busy (1h)', color: 'bg-red-100 text-red-700 hover:bg-red-200', val: addHours(now, 1) },
+                { state: 'away', label: 'Away (1d)', color: 'bg-orange-100 text-orange-700 hover:bg-orange-200', val: addDays(now, 1) },
+                { state: 'offline', label: 'Offline', color: 'bg-gray-100 text-gray-700 hover:bg-gray-200' },
+              ].map((s) => (
+                <form key={s.state} action="/api/v1/me/status" method="POST">
+                  <input type="hidden" name="state" value={s.state} />
+                  {s.val && <input type="hidden" name="valid_until" value={s.val.toISOString()} />}
+                  <button type="submit" className={`px-4 py-2 text-sm font-medium rounded-full ${s.color}`}>
+                    {s.label}
+                  </button>
+                </form>
+              ))}
+            </div>
+          </section>
+
+          <section className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+             <h2 className="text-lg font-bold text-gray-800 mb-4">Next Window</h2>
+             {nextAvailable ? (
+                <p className="text-lg text-gray-700">
+                  Available from {format(new Date(nextAvailable.start), 'MMM d, h:mm a')}
+                </p>
+             ) : (
+                <p className="text-gray-500">No upcoming windows.</p>
+             )}
+          </section>
+        </div>
+
+        <nav className="mt-8 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-lg font-bold text-gray-800 mb-4">Management</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { label: 'Weekly Rules', href: '/dashboard/rules', tip: 'Set your regular working hours.' },
+              { label: 'One-Off Blocks', href: '/dashboard/blocks', tip: 'Override rules for specific dates.' },
+              { label: 'Custom Status', href: '/dashboard/status', tip: 'Set a specific status message.' },
+              { label: 'API Tokens', href: '/dashboard/api-tokens', tip: 'Generate tokens for integrations.' },
+            ].map(link => (
+              <Tooltip key={link.href} text={link.tip}>
+                <Link href={link.href} className="block p-4 text-center rounded-xl bg-gray-50 hover:bg-indigo-50 text-indigo-700 font-semibold">
+                  {link.label}
+                </Link>
+              </Tooltip>
+            ))}
           </div>
-        </div>
-
-        {/* Next Available Window Card */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Next Available Window</h2>
-          {nextAvailableWindow ? (
-            <>
-              <p className="text-lg font-medium mb-1">
-                {new Date(nextAvailableWindow.start).toLocaleString("en-US", {
-                  timeZone: userTimezone,
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                })}{" "}
-                -{" "}
-                {new Date(nextAvailableWindow.end).toLocaleString("en-US", {
-                  timeZone: userTimezone,
-                  hour: "numeric",
-                  minute: "numeric",
-                })}
-              </p>
-              <p className="text-gray-500 text-sm">Timezone: {userTimezone}</p>
-            </>
-          ) : (
-            <p className="text-lg text-gray-600">No upcoming available windows.</p>
-          )}
-        </div>
-
-        {/* Navigation Links */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Manage</h2>
-          <ul className="space-y-2">
-            <li>
-              <Link href="/dashboard/rules" className="text-indigo-600 hover:underline">
-                Manage Weekly Rules
-              </Link>
-            </li>
-            <li>
-              <Link href="/dashboard/blocks" className="text-indigo-600 hover:underline">
-                Manage One-Off Blocks
-              </Link>
-            </li>
-            <li>
-              <Link href="/dashboard/status" className="text-indigo-600 hover:underline">
-                Update Custom Status
-              </Link>
-            </li>
-            <li>
-              <Link href="/dashboard/api-tokens" className="text-indigo-600 hover:underline">
-                Manage API Tokens
-              </Link>
-            </li>
-            <li>
-              <Link href={`/u/${user.handle}`} className="text-indigo-600 hover:underline">
-                Your Public Page
-              </Link>
-            </li>
-          </ul>
-        </div>
+        </nav>
       </div>
     </div>
   );
