@@ -8,22 +8,23 @@ export const authOptions = {
   providers: [
     Credentials({
       credentials: {
-        email: {},
+        handle: {},
         password: {},
       },
       authorize: async (credentials) => {
         if (!credentials) return null;
         
-        const email = credentials.email as string;
+        const handle = credentials.handle as string;
         let user = await prisma.user.findUnique({
-          where: { email },
+          where: { handle },
         });
 
         if (!user) {
+          // Create a new user if not found
           user = await prisma.user.create({
             data: {
-              email: email,
-              handle: email.split("@")[0],
+              email: `${handle}@availeasy.test`, // Dummy email
+              handle: handle,
             },
           });
         }
@@ -62,10 +63,3 @@ export const authOptions = {
 const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
-
-export const auth = async () => {
-    // This is a placeholder as NextAuth v4 does not support the same auth() 
-    // pattern as v5 (Auth.js) in server components.
-    // In v4, you typically use getServerSession.
-    return null;
-};
