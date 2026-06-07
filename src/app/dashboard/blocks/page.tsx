@@ -126,58 +126,58 @@ export default function BlocksPage() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="min-h-screen bg-gray-100 p-8 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8 flex items-center justify-center text-gray-900 dark:text-gray-100">
         Loading...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Manage One-Off Availability Blocks</h1>
-      <Link href="/dashboard" className="text-indigo-600 hover:underline mb-4 inline-block">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+      <h1 className="text-3xl font-bold mb-6">Manage One-Off Availability Blocks</h1>
+      <Link href="/dashboard" className="text-indigo-600 dark:text-indigo-400 hover:underline mb-4 inline-block">
         &larr; Back to Dashboard
       </Link>
 
-      <div className="bg-white rounded-lg shadow p-6 mt-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-4 border border-gray-200 dark:border-gray-700">
         {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">{error}</div>}
         {success && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">{success}</div>}
 
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Block</h2>
+        <h2 className="text-xl font-semibold mb-4">Add New Block</h2>
         <form onSubmit={handleAddBlock} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="start" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="start" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Starts At (UTC)
             </label>
             <input
               type="datetime-local"
               id="start"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               value={newBlock.start}
               onChange={(e) => handleNewBlockChange("start", e.target.value)}
               required
             />
           </div>
           <div>
-            <label htmlFor="end" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="end" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Ends At (UTC)
             </label>
             <input
               type="datetime-local"
               id="end"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               value={newBlock.end}
               onChange={(e) => handleNewBlockChange("end", e.target.value)}
               required
             />
           </div>
           <div>
-            <label htmlFor="state" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="state" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               State
             </label>
             <select
               id="state"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               value={newBlock.state}
               onChange={(e) =>
                 handleNewBlockChange("state", e.target.value as AvailabilityState)
@@ -192,26 +192,26 @@ export default function BlocksPage() {
             </select>
           </div>
           <div>
-            <label htmlFor="public_label" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="public_label" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Public Label (Optional)
             </label>
             <input
               type="text"
               id="public_label"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               value={newBlock.public_label}
               onChange={(e) => handleNewBlockChange("public_label", e.target.value)}
               maxLength={80}
             />
           </div>
           <div className="md:col-span-2">
-            <label htmlFor="private_note" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="private_note" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Private Note (Optional)
             </label>
             <textarea
               id="private_note"
               rows={3}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               value={newBlock.private_note}
               onChange={(e) => handleNewBlockChange("private_note", e.target.value)}
               maxLength={500}
@@ -229,28 +229,28 @@ export default function BlocksPage() {
         </form>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6 mt-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Upcoming Blocks</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-8 border border-gray-200 dark:border-gray-700">
+        <h2 className="text-xl font-semibold mb-4">Upcoming Blocks</h2>
         {blocks.length === 0 ? (
-          <p className="text-gray-600">No one-off availability blocks found.</p>
+          <p className="text-gray-600 dark:text-gray-400">No one-off availability blocks found.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Starts At
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Ends At
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     State
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Public Label
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Private Note
                   </th>
                   <th scope="col" className="relative px-6 py-3">
@@ -258,28 +258,28 @@ export default function BlocksPage() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {blocks.map((block) => (
                   <tr key={block.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {format(new Date(block.startsAt), "yyyy-MM-dd HH:mm")}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {format(new Date(block.endsAt), "yyyy-MM-dd HH:mm")}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {block.state.charAt(0).toUpperCase() + block.state.slice(1)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {block.publicLabel || "-"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {block.privateNote || "-"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         onClick={() => handleDeleteBlock(block.id)}
-                        className="text-red-600 hover:text-red-900"
+                        className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                       >
                         Delete
                       </button>

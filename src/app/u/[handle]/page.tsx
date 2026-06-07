@@ -45,17 +45,17 @@ const UserPublicPage: NextPage<UserPublicPageProps> = async ({ params }) => {
   `;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8 text-gray-900 dark:text-gray-100">
       <Script src={`${process.env.NEXTAUTH_URL}/u/${handle}/embed.js?v=2`} strategy="lazyOnload" />
 
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">
+      <h1 className="text-3xl font-bold mb-6">
         {user.name || `@${handle}`}&apos;s Availability
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Current Status */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Current Status</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-semibold mb-4">Current Status</h2>
           <div className="flex items-center gap-2 mb-2">
             <span
               className={`w-3 h-3 rounded-full ${
@@ -73,10 +73,10 @@ const UserPublicPage: NextPage<UserPublicPageProps> = async ({ params }) => {
             </span>
           </div>
           {publicStatus.message && (
-            <p className="text-gray-600 text-sm mb-2">"{publicStatus.message}"</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">"{publicStatus.message}"</p>
           )}
           {publicStatus.valid_until && (
-            <p className="text-gray-500 text-xs">
+            <p className="text-gray-500 dark:text-gray-500 text-xs">
               Until:{" "}
               {format(new Date(publicStatus.valid_until), "MMM d, yyyy HH:mm")}
             </p>
@@ -84,14 +84,14 @@ const UserPublicPage: NextPage<UserPublicPageProps> = async ({ params }) => {
         </div>
 
         {/* Availability for Next 7 Days */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Next 7 Days Availability</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-semibold mb-4">Next 7 Days Availability</h2>
           {availabilityWindows.length === 0 ? (
-            <p className="text-gray-600">No availability windows found for the next 7 days.</p>
+            <p className="text-gray-600 dark:text-gray-400">No availability windows found for the next 7 days.</p>
           ) : (
             <ul className="space-y-2">
               {availabilityWindows.map((window, index) => (
-                <li key={index} className="text-sm text-gray-800">
+                <li key={index} className="text-sm">
                   <span
                     className={`inline-block w-2 h-2 rounded-full mr-2 ${
                       window.state === AvailabilityState.available
@@ -113,12 +113,12 @@ const UserPublicPage: NextPage<UserPublicPageProps> = async ({ params }) => {
       </div>
 
       {/* Embed Snippet */}
-      <div className="bg-white rounded-lg shadow p-6 mt-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Embed Widget</h2>
-        <p className="text-gray-600 mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-8 border border-gray-200 dark:border-gray-700">
+        <h2 className="text-xl font-semibold mb-4">Embed Widget</h2>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">
           Copy and paste this HTML snippet into your website to display your live availability.
         </p>
-        <pre className="bg-gray-100 p-4 rounded-md text-sm overflow-x-auto">
+        <pre className="bg-gray-100 dark:bg-gray-700 p-4 rounded-md text-sm overflow-x-auto text-gray-900 dark:text-gray-100">
           <code>{embedSnippet}</code>
         </pre>
         <CopyButton 
@@ -127,8 +127,8 @@ const UserPublicPage: NextPage<UserPublicPageProps> = async ({ params }) => {
         />
 
         <div className="mt-8">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">Live Demo</h3>
-          <div id="availability-widget" data-user={handle} className="border p-4 rounded-md">
+          <h3 className="text-lg font-semibold mb-2">Live Demo</h3>
+          <div id="availability-widget" data-user={handle} className="border border-gray-200 dark:border-gray-700 p-4 rounded-md">
             {/* Widget will render here */}
           </div>
         </div>

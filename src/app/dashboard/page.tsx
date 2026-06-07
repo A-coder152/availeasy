@@ -9,7 +9,6 @@ import { getAvailabilityForRange } from "@/lib/availability/calculate";
 import { addDays, addHours, format } from "date-fns";
 import { AvailabilityState, CurrentStatusState } from "@prisma/client";
 import Tooltip from "@/components/Tooltip";
-import ThemeToggle from "@/components/ThemeToggle";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -54,7 +53,6 @@ export default async function DashboardPage() {
                 Sign Out
               </button>
             </form>
-            <ThemeToggle />
           </div>
         </header>
 
@@ -111,7 +109,7 @@ export default async function DashboardPage() {
               { label: 'API Tokens', href: '/dashboard/api-tokens', tip: 'Generate tokens for integrations.' },
             ].map(link => (
               <Tooltip key={link.href} text={link.tip}>
-                <Link href={link.href} className="block p-4 text-center rounded-xl bg-gray-50 dark:bg-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-semibold">
+                <Link href={link.href} className="block p-4 text-center rounded-xl bg-gray-50 dark:bg-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-semibold transition-colors">
                   {link.label}
                 </Link>
               </Tooltip>

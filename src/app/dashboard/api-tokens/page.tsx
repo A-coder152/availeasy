@@ -123,33 +123,33 @@ export default function ApiTokensPage() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="min-h-screen bg-gray-100 p-8 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8 flex items-center justify-center text-gray-900 dark:text-gray-100">
         Loading...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Manage API Tokens</h1>
-      <Link href="/dashboard" className="text-indigo-600 hover:underline mb-4 inline-block">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+      <h1 className="text-3xl font-bold mb-6">Manage API Tokens</h1>
+      <Link href="/dashboard" className="text-indigo-600 dark:text-indigo-400 hover:underline mb-4 inline-block">
         &larr; Back to Dashboard
       </Link>
 
-      <div className="bg-white rounded-lg shadow p-6 mt-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-4 border border-gray-200 dark:border-gray-700">
         {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">{error}</div>}
         {success && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">{success}</div>}
 
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Create New API Token</h2>
+        <h2 className="text-xl font-semibold mb-4">Create New API Token</h2>
         <form onSubmit={handleCreateToken} className="space-y-4">
           <div>
-            <label htmlFor="tokenName" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="tokenName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Token Name
             </label>
             <input
               type="text"
               id="tokenName"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               value={newTokenName}
               onChange={(e) => setNewTokenName(e.target.value)}
               required
@@ -157,7 +157,7 @@ export default function ApiTokensPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Scopes</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Scopes</label>
             <div className="mt-1 grid grid-cols-2 sm:grid-cols-3 gap-2">
               {availableScopes.map((scope) => (
                 <div key={scope} className="flex items-center">
@@ -173,9 +173,9 @@ export default function ApiTokensPage() {
                         setNewTokenScopes(newTokenScopes.filter((s) => s !== scope));
                       }
                     }}
-                    className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                    className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600"
                   />
-                  <label htmlFor={`scope-${scope}`} className="ml-2 block text-sm text-gray-900">
+                  <label htmlFor={`scope-${scope}`} className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
                     {scope}
                   </label>
                 </div>
@@ -194,14 +194,14 @@ export default function ApiTokensPage() {
         </form>
 
         {generatedToken && generatedToken.plainTextToken && (
-          <div className="bg-yellow-50 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative mt-6">
+          <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-400 dark:border-yellow-700 text-yellow-700 dark:text-yellow-400 px-4 py-3 rounded relative mt-6">
             <p className="font-bold">Your new API Token (Copy this now!)</p>
             <p className="break-all font-mono text-sm mt-2">{generatedToken.plainTextToken}</p>
             <button
               onClick={() =>
                 navigator.clipboard.writeText(generatedToken.plainTextToken || "")
               }
-              className="mt-2 text-indigo-600 hover:text-indigo-900 text-sm"
+              className="mt-2 text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-200 text-sm"
             >
               Copy to clipboard
             </button>
@@ -209,28 +209,28 @@ export default function ApiTokensPage() {
         )}
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6 mt-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Your API Tokens</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-8 border border-gray-200 dark:border-gray-700">
+        <h2 className="text-xl font-semibold mb-4">Your API Tokens</h2>
         {tokens.length === 0 ? (
-          <p className="text-gray-600">No API tokens found.</p>
+          <p className="text-gray-600 dark:text-gray-400">No API tokens found.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Name
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Prefix
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Scopes
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Created At
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Last Used
                   </th>
                   <th scope="col" className="relative px-6 py-3">
@@ -238,28 +238,28 @@ export default function ApiTokensPage() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {tokens.map((token) => (
                   <tr key={token.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       {token.name}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500 dark:text-gray-400">
                       {token.tokenPrefix}...
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       {(token.scopes as string[]).join(", ")}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       {format(new Date(token.createdAt), "yyyy-MM-dd HH:mm")}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       {token.lastUsedAt ? format(new Date(token.lastUsedAt), "yyyy-MM-dd HH:mm") : "Never"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
                         onClick={() => handleDeleteToken(token.id)}
-                        className="text-red-600 hover:text-red-900"
+                        className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                       >
                         Delete
                       </button>
