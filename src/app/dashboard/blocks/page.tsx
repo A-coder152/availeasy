@@ -73,7 +73,7 @@ export default function BlocksPage() {
       // Client-side Zod validation
       const validationResult = createBlockSchema.safeParse(payload);
       if (!validationResult.success) {
-        throw new Error(validationResult.error.errors.map(e => e.message).join(", "));
+        throw new Error(validationResult.error.issues.map(e => e.message).join(", "));
       }
 
       const response = await fetch("/api/v1/me/blocks", {

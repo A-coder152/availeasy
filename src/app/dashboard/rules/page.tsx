@@ -10,6 +10,7 @@ import {
   User,
 } from "@prisma/client";
 import { updateRulesSchema } from "@/lib/availability/validation";
+import ThemeToggle from "@/components/ThemeToggle";
 
 // Helper for initial rule state
 const createEmptyRule = (): Partial<AvailabilityRule> => ({
@@ -42,8 +43,7 @@ export default function RulesPage() {
     setLoading(true);
     setError(null);
     try {
-      // Fetch user details including timezone and rules
-      const response = await fetch(`/api/user/${session?.user?.id}`); // Assuming a GET /api/user/:id endpoint exists
+      const response = await fetch(`/api/user/${session?.user?.id}`); 
       if (!response.ok) {
         throw new Error("Failed to fetch user data and rules");
       }
@@ -91,10 +91,9 @@ export default function RulesPage() {
         })),
       };
 
-      // Validate payload with Zod client-side
       const validationResult = updateRulesSchema.safeParse(payload);
       if (!validationResult.success) {
-        throw new Error(validationResult.error.errors.map(e => e.message).join(", "));
+        throw new Error(validationResult.error.issues.map((e: any) => e.message).join(", "));
       }
 
       const response = await fetch("/api/v1/me/rules", {
@@ -111,7 +110,6 @@ export default function RulesPage() {
       }
 
       setSuccess("Rules saved successfully!");
-      // Re-fetch rules to ensure consistency with server, especially if server applies defaults/clipping
       fetchRules();
     } catch (err: any) {
       setError(err.message || "An error occurred while saving rules.");
@@ -122,53 +120,53 @@ export default function RulesPage() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="min-h-screen bg-gray-100 p-8 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8 flex items-center justify-center">
         Loading...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Manage Weekly Availability Rules</h1>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8 text-gray-900 dark:text-gray-100">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Manage Weekly Availability Rules</h1>
+        <ThemeToggle />
+      </div>
       <Link href="/dashboard" className="text-indigo-600 hover:underline mb-4 inline-block">
         &larr; Back to Dashboard
       </Link>
 
-      <div className="bg-white rounded-lg shadow p-6 mt-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-4">
         {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">{error}</div>}
         {success && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">{success}</div>}
 
         <div className="mb-4">
-          <label htmlFor="timezone" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="timezone" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Your Timezone (IANA format)
           </label>
           <input
             type="text"
             id="timezone"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             value={userTimezone}
             onChange={(e) => setUserTimezone(e.target.value)}
           />
-          <p className="mt-2 text-sm text-gray-500">
-            e.g., America/New_York, Europe/London. This will be applied to all your rules.
-          </p>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Day of Week
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Day
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Start Time
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Start
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  End Time
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  End
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   State
                 </th>
                 <th scope="col" className="relative px-6 py-3">
@@ -176,7 +174,7 @@ export default function RulesPage() {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {rules.map((rule, index) => (
                 <tr key={index}>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -185,7 +183,7 @@ export default function RulesPage() {
                       onChange={(e) =>
                         handleRuleChange(index, "dayOfWeek", parseInt(e.target.value))
                       }
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     >
                       {["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map((day, i) => (
                         <option key={i} value={i}>
@@ -201,7 +199,7 @@ export default function RulesPage() {
                       onChange={(e) =>
                         handleRuleChange(index, "startTimeLocal", e.target.value)
                       }
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -211,7 +209,7 @@ export default function RulesPage() {
                       onChange={(e) =>
                         handleRuleChange(index, "endTimeLocal", e.target.value)
                       }
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -220,7 +218,7 @@ export default function RulesPage() {
                       onChange={(e) =>
                         handleRuleChange(index, "state", e.target.value as AvailabilityState)
                       }
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     >
                       {Object.values(AvailabilityState).map((state) => (
                         <option key={state} value={state}>

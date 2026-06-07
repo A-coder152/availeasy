@@ -67,7 +67,7 @@ export default function ApiTokensPage() {
       // Client-side Zod validation
       const validationResult = createApiTokenSchema.safeParse(payload);
       if (!validationResult.success) {
-        throw new Error(validationResult.error.errors.map(e => e.message).join(", "));
+        throw new Error(validationResult.error.issues.map(e => e.message).join(", "));
       }
 
       const response = await fetch("/api/v1/me/api-tokens", {
@@ -248,7 +248,7 @@ export default function ApiTokensPage() {
                       {token.tokenPrefix}...
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {token.scopes.join(", ")}
+                      {(token.scopes as string[]).join(", ")}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {format(new Date(token.createdAt), "yyyy-MM-dd HH:mm")}

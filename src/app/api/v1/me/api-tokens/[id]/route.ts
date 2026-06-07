@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authenticateRequest, unauthorizedResponse, forbiddenResponse } from "@/lib/auth/server-utils";
+import { authenticateRequest, unauthorizedResponse, forbiddenResponse, getTokenScopes } from "@/lib/auth/server-utils";
 import { deleteApiToken } from "@/lib/repositories/apiToken";
 import { idSchema } from "@/lib/availability/validation";
 
@@ -12,7 +12,9 @@ export async function DELETE(
   if (!userId) {
     return unauthorizedResponse();
   }
-  if (apiToken && !apiToken.scopes.includes("admin") && !apiToken.scopes.includes("write")) {
+
+  const tokenScopes = apiToken ? getTokenScopes(apiToken) : [];
+  if (apiToken && !tokenScopes.includes("admin") && !tokenScopes.includes("write")) {
     return forbiddenResponse("API Token does not have 'admin' or 'write' scope to delete API tokens.");
   }
 

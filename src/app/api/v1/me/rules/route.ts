@@ -1,7 +1,7 @@
 import prisma from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { updateRulesSchema } from "@/lib/availability/validation";
-import { authenticateRequest, unauthorizedResponse, forbiddenResponse } from "@/lib/auth/server-utils";
+import { authenticateRequest, unauthorizedResponse, forbiddenResponse, getTokenScopes } from "@/lib/auth/server-utils";
 import {
   deleteAllAvailabilityRulesForUser,
   createAvailabilityRules,
@@ -15,7 +15,9 @@ export async function PUT(req: NextRequest) {
   if (!userId) {
     return unauthorizedResponse();
   }
-  if (apiToken && !apiToken.scopes.includes("write/rules") && !apiToken.scopes.includes("write")) {
+  
+  const tokenScopes = apiToken ? getTokenScopes(apiToken) : [];
+  if (apiToken && !tokenScopes.includes("write/rules") && !tokenScopes.includes("write")) {
     return forbiddenResponse("API Token does not have 'write/rules' or 'write' scope.");
   }
 
@@ -43,7 +45,7 @@ export async function PUT(req: NextRequest) {
 
   try {
     // Start a transaction to ensure atomicity
-    await prisma.$transaction(async (prisma) => {
+    await prisma.$transaction(async (tx) => {
       // 1. Delete all existing rules for the user
       await deleteAllAvailabilityRulesForUser(userId);
 

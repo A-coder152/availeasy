@@ -4,7 +4,7 @@ import { getAvailabilityForRange } from "@/lib/availability/calculate";
 import { getCurrentStatusByUserId } from "@/lib/repositories/currentStatus";
 import { toPublicStatus } from "@/lib/public-safety";
 import { addDays, format } from "date-fns";
-import { AvailabilityState } from "@prisma/client";
+import { AvailabilityState, CurrentStatusState } from "@prisma/client";
 import { notFound } from "next/navigation";
 import Script from "next/script";
 import CopyButton from "@/components/CopyButton";
@@ -59,11 +59,11 @@ const UserPublicPage: NextPage<UserPublicPageProps> = async ({ params }) => {
           <div className="flex items-center gap-2 mb-2">
             <span
               className={`w-3 h-3 rounded-full ${
-                publicStatus.state === AvailabilityState.available
+                publicStatus.state === CurrentStatusState.available
                   ? "bg-green-500"
-                  : publicStatus.state === AvailabilityState.busy
+                  : publicStatus.state === CurrentStatusState.busy
                   ? "bg-red-500"
-                  : publicStatus.state === AvailabilityState.unavailable
+                  : publicStatus.state === CurrentStatusState.away
                   ? "bg-orange-500"
                   : "bg-gray-500" // Offline/Custom
               }`}

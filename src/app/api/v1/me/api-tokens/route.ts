@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createApiTokenSchema } from "@/lib/availability/validation";
-import { authenticateRequest, unauthorizedResponse, forbiddenResponse } from "@/lib/auth/server-utils";
+import { authenticateRequest, unauthorizedResponse, forbiddenResponse, getTokenScopes } from "@/lib/auth/server-utils";
 import { generateApiToken } from "@/lib/auth/api-tokens";
 import { createApiToken as dbCreateApiToken, getApiTokensByUserId } from "@/lib/repositories/apiToken";
 
@@ -29,7 +29,8 @@ export async function POST(req: NextRequest) {
     return unauthorizedResponse();
   }
   
-  if (apiToken && !apiToken.scopes.includes("admin") && !apiToken.scopes.includes("write")) {
+  const tokenScopes = apiToken ? getTokenScopes(apiToken) : [];
+  if (apiToken && !tokenScopes.includes("admin") && !tokenScopes.includes("write")) {
     return forbiddenResponse("API Token does not have 'admin' or 'write' scope to create API tokens.");
   }
 

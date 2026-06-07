@@ -59,6 +59,14 @@ export const unauthorizedResponse = (message: string = "Unauthorized") => {
 /**
  * Helper to create a forbidden response (e.g., due to insufficient scope).
  */
+/**
+ * Helper to create a forbidden response (e.g., due to insufficient scope).
+ */
 export const forbiddenResponse = (message: string = "Forbidden") => {
   return new NextResponse(message, { status: 403 });
 };
+
+export const getTokenScopes = (apiToken: ApiToken): string[] => {
+  return (apiToken.scopes as string[]) || [];
+};
+

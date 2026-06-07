@@ -1,22 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authenticateRequest, unauthorizedResponse, forbiddenResponse } from "@/lib/auth/server-utils";
+import { authenticateRequest, unauthorizedResponse, forbiddenResponse, getTokenScopes } from "@/lib/auth/server-utils";
 import { deleteAvailabilityException } from "@/lib/repositories/availabilityException";
 import { idSchema } from "@/lib/availability/validation";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { userId, apiToken } = await authenticateRequest(req, ["write", "write/blocks"]);
 
   if (!userId) {
     return unauthorizedResponse();
   }
-  if (apiToken && !apiToken.scopes.includes("write/blocks") && !apiToken.scopes.includes("write")) {
+
+  const tokenScopes = apiToken ? getTokenScopes(apiToken) : [];
+  if (apiToken && !tokenScopes.includes("write/blocks") && !tokenScopes.includes("write")) {
     return forbiddenResponse("API Token does not have 'write/blocks' or 'write' scope.");
   }
 
-  const parseResult = idSchema.safeParse(params.id);
+  const { id } = await params;
+  const parseResult = idSchema.safeParse(id);
   if (!parseResult.success) {
     return new NextResponse("Invalid block ID", { status: 400 });
   }

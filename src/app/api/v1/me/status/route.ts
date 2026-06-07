@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateStatusSchema } from "@/lib/availability/validation";
-import { authenticateRequest, unauthorizedResponse, forbiddenResponse } from "@/lib/auth/server-utils";
+import { authenticateRequest, unauthorizedResponse, forbiddenResponse, getTokenScopes } from "@/lib/auth/server-utils";
 import { upsertCurrentStatus, getCurrentStatusByUserId } from "@/lib/repositories/currentStatus";
 import { toPublicStatus } from "@/lib/public-safety";
 import { findUserById } from "@/lib/repositories/user";
@@ -41,7 +41,8 @@ async function handleStatusUpdate(req: NextRequest) {
   if (!userId) {
     return unauthorizedResponse();
   }
-  if (apiToken && !apiToken.scopes.includes("write/status") && !apiToken.scopes.includes("write")) {
+  const tokenScopes = apiToken ? getTokenScopes(apiToken) : [];
+  if (apiToken && !tokenScopes.includes("write/status") && !tokenScopes.includes("write")) {
     return forbiddenResponse("API Token does not have 'write/status' or 'write' scope.");
   }
 

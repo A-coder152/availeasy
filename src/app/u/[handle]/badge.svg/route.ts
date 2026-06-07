@@ -15,9 +15,9 @@ const generateSvgBadge = (statusText: string, color: string) => `
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { handle: string } }
+  { params }: { params: Promise<{ handle: string }> }
 ) {
-  const { handle } = params;
+  const { handle } = await params;
 
   // 1. Fetch User by handle
   const user = await findUserByHandle(handle);

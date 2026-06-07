@@ -1,15 +1,15 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@auth/prisma-adapter";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/db";
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
       credentials: {
-        handle: {},
-        password: {},
+        handle: { label: "Handle", type: "text" },
+        password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
         if (!credentials) return null;
@@ -47,10 +47,10 @@ export const authOptions = {
       return token;
     },
     session: async ({ session, token }) => {
-      if (token) {
+      if (token && session.user) {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
-        (session.user as any).handle = token.handle as string;
+        session.user.handle = token.handle as string;
       }
       return session;
     },

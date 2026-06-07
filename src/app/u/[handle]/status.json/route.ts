@@ -13,9 +13,9 @@ const applyRateLimiting = async (req: NextRequest) => {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { handle: string } }
+  { params }: { params: Promise<{ handle: string }> }
 ) {
-  const { handle } = params;
+  const { handle } = await params;
 
   // Rate limiting placeholder
   const { allowed } = await applyRateLimiting(req);

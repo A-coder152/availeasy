@@ -33,11 +33,16 @@ export const createAvailabilityException = async (data: {
   startsAt: Date;
   endsAt: Date;
   state: AvailabilityState;
-  publicLabel?: string;
-  privateNote?: string;
+  publicLabel?: string | null;
+  privateNote?: string | null;
   source?: ExceptionSource;
 }): Promise<AvailabilityException> => {
-  return prisma.availabilityException.create({ data });
+  return prisma.availabilityException.create({ 
+    data: {
+      ...data,
+      source: data.source || ExceptionSource.manual,
+    } 
+  });
 };
 
 /**
